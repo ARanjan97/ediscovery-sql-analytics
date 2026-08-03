@@ -102,3 +102,29 @@ CREATE TABLE reviews (
         FOREIGN KEY (reviewer_id)
         REFERENCES reviewers(reviewer_id)
 );
+
+-- ==========================================
+-- SLA Tracking Table
+-- ==========================================
+CREATE TABLE sla_tracking (
+    sla_id SERIAL PRIMARY KEY,
+    case_id INTEGER NOT NULL,
+    upload_id INTEGER NOT NULL,
+    reviewer_id INTEGER NOT NULL,
+    sla_due_date TIMESTAMP NOT NULL,
+    completed_date TIMESTAMP,
+    turnaround_hours DECIMAL(8,2),
+    sla_status VARCHAR(20) NOT NULL,
+
+    CONSTRAINT fk_sla_case
+        FOREIGN KEY (case_id)
+        REFERENCES cases(case_id),
+
+    CONSTRAINT fk_sla_upload
+        FOREIGN KEY (upload_id)
+        REFERENCES uploads(upload_id),
+
+    CONSTRAINT fk_sla_reviewer
+        FOREIGN KEY (reviewer_id)
+        REFERENCES reviewers(reviewer_id)
+);
