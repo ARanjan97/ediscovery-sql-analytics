@@ -47,8 +47,34 @@ SELECT
         WHEN 5 THEN 'Contract Dispute'
     END,
     'Active',
+    
     'High',
     CURRENT_DATE,
     NULL
 FROM clients c
+CROSS JOIN generate_series(1,5) AS gs(n);
+
+-- ==========================================
+-- Seed Data - Custodians (500 Records)
+-- ==========================================
+INSERT INTO custodians (
+    case_id,
+    custodian_name,
+    email,
+    department,
+    country
+)
+SELECT
+    c.case_id,
+    'Custodian ' || ROW_NUMBER() OVER (),
+    'custodian' || ROW_NUMBER() OVER () || '@company.com',
+    CASE n
+        WHEN 1 THEN 'Legal'
+        WHEN 2 THEN 'Finance'
+        WHEN 3 THEN 'Human Resources'
+        WHEN 4 THEN 'IT'
+        WHEN 5 THEN 'Compliance'
+    END,
+    'USA'
+FROM cases AS c
 CROSS JOIN generate_series(1,5) AS gs(n);
