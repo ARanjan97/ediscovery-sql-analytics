@@ -38,23 +38,17 @@ INSERT INTO cases (
 )
 SELECT
     c.client_id,
-
     c.client_name || ' - ' ||
-    CASE gs
+    CASE n
         WHEN 1 THEN 'Patent Litigation'
         WHEN 2 THEN 'Employment Investigation'
         WHEN 3 THEN 'GDPR Compliance Review'
         WHEN 4 THEN 'Internal Audit'
         WHEN 5 THEN 'Contract Dispute'
     END,
-
-    (ARRAY['Active','Closed','On Hold'])[floor(random()*3 + 1)],
-
-    (ARRAY['High','Medium','Low'])[floor(random()*3 + 1)],
-
-    CURRENT_DATE - (floor(random()*365))::INTEGER,
-
+    'Active',
+    'High',
+    CURRENT_DATE,
     NULL
-
 FROM clients c
-CROSS JOIN generate_series(1,5) AS gs;
+CROSS JOIN generate_series(1,5) AS gs(n);
