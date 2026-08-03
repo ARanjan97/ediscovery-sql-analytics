@@ -68,3 +68,37 @@ CREATE TABLE uploads (
         FOREIGN KEY (custodian_id)
         REFERENCES custodians(custodian_id)
 );
+
+-- ==========================================
+-- Reviewers Table
+-- ==========================================
+CREATE TABLE reviewers (
+    reviewer_id SERIAL PRIMARY KEY,
+    reviewer_name VARCHAR(100) NOT NULL,
+    email VARCHAR(150) UNIQUE NOT NULL,
+    team VARCHAR(50),
+    experience_years INTEGER CHECK (experience_years >= 0)
+);
+
+-- ==========================================
+-- Reviews Table
+-- ==========================================
+CREATE TABLE reviews (
+    review_id SERIAL PRIMARY KEY,
+    upload_id INTEGER NOT NULL,
+    reviewer_id INTEGER NOT NULL,
+    review_start TIMESTAMP NOT NULL,
+    review_end TIMESTAMP,
+    documents_reviewed INTEGER DEFAULT 0,
+    privileged_documents INTEGER DEFAULT 0,
+    qc_status VARCHAR(20),
+    review_status VARCHAR(20),
+
+    CONSTRAINT fk_review_upload
+        FOREIGN KEY (upload_id)
+        REFERENCES uploads(upload_id),
+
+    CONSTRAINT fk_review_reviewer
+        FOREIGN KEY (reviewer_id)
+        REFERENCES reviewers(reviewer_id)
+);
