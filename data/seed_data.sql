@@ -199,3 +199,32 @@ SELECT
     END
 
 FROM uploads u;
+
+-- ==========================================================
+-- Seed Data: SLA Tracking
+-- Description: Generate one SLA record for every upload
+-- Total Records: 500
+-- ==========================================================
+
+INSERT INTO sla_tracking (
+    case_id,
+    upload_id,
+    reviewer_id,
+    sla_due_date,
+    completed_date,
+    turnaround_hours,
+    sla_status
+)
+SELECT
+    u.case_id,
+    u.upload_id,
+    (FLOOR(random() * 25) + 1)::INTEGER,
+    u.upload_date + INTERVAL '3 days',
+    u.upload_date + INTERVAL '5 days',
+    ROUND((12 + random() * 84)::NUMERIC, 2),
+    CASE (FLOOR(random() * 3))::INTEGER
+        WHEN 0 THEN 'Met'
+        WHEN 1 THEN 'Breached'
+        ELSE 'In Progress'
+    END
+FROM uploads u;
