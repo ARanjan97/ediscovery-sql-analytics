@@ -121,4 +121,41 @@ VALUES
 ('Xavier Young', 'Team Omega', 7, 'xavier.young@ediscovery.com', 'RVW024'),
 ('Zoe King', 'Team Omega', 3, 'zoe.king@ediscovery.com', 'RVW025');
 
+-- ============================================================
+-- Seed Data: Uploads
+-- Total Records: 500
+-- One upload per custodian
+-- ============================================================
 
+INSERT INTO uploads (
+    case_id,
+    custodian_id,
+    upload_date,
+    data_size_gb,
+    documents_uploaded,
+    processing_time_minutes,
+    processing_status
+)
+SELECT
+    c.case_id,
+    c.custodian_id,
+    CURRENT_DATE - (FLOOR(random() * 180))::INTEGER,
+    ROUND((5 + random() * 45)::NUMERIC, 2),
+    (FLOOR(random() * 45000) + 5000)::INTEGER,
+    (FLOOR(random() * 240) + 20)::INTEGER,
+    CASE FLOOR(random() * 4)
+        WHEN 0 THEN 'Completed'
+        WHEN 1 THEN 'Processing'
+        WHEN 2 THEN 'Pending'
+        ELSE 'Failed'
+    END
+FROM custodians c;
+
+-- Verification
+SELECT COUNT(*) AS total_uploads
+FROM uploads;
+
+SELECT *
+FROM uploads
+ORDER BY upload_id
+LIMIT 10;
