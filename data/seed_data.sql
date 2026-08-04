@@ -159,3 +159,43 @@ SELECT *
 FROM uploads
 ORDER BY upload_id
 LIMIT 10;
+
+-- ==========================================================
+-- Seed Data: Reviews
+-- Description: Generate one review for every upload
+-- Total Records: 500
+-- ==========================================================
+
+INSERT INTO reviews (
+    upload_id,
+    reviewer_id,
+    review_start,
+    review_end,
+    documents_reviewed,
+    privileged_documents,
+    qc_status,
+    review_status
+)
+SELECT
+    u.upload_id,
+    (FLOOR(random() * 25) + 1)::INTEGER,
+    u.upload_date + INTERVAL '1 day',
+    u.upload_date + INTERVAL '3 days',
+    (FLOOR(random() * u.documents_uploaded) + 1)::INTEGER,
+    (FLOOR(random() * 100))::INTEGER,
+
+    CASE (FLOOR(random() * 4))::INT
+        WHEN 0 THEN 'Passed'
+        WHEN 1 THEN 'Pending'
+        WHEN 2 THEN 'Failed'
+        ELSE 'Not Required'
+    END,
+
+    CASE (FLOOR(random() * 4))::INT
+        WHEN 0 THEN 'Completed'
+        WHEN 1 THEN 'In Progress'
+        WHEN 2 THEN 'Pending'
+        ELSE 'Escalated'
+    END
+
+FROM uploads u;
