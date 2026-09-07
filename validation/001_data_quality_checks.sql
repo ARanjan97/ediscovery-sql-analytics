@@ -51,3 +51,27 @@ FROM reviews
 GROUP BY review_id
 HAVING COUNT(*) > 1;
 
+
+----Freeze the Reporting Layer----
+SELECT
+    table_name
+FROM information_schema.views
+WHERE table_schema = 'public'
+  AND table_name IN (
+      'vw_case_hierarchy',
+      'vw_case_summary',
+      'vw_reviewer_performance',
+      'vw_sla_performance',
+      'vw_processing_performance'
+  )
+ORDER BY table_name;
+
+SELECT 'vw_case_hierarchy' AS view_name, COUNT(*) AS row_count FROM vw_case_hierarchy
+UNION ALL
+SELECT 'vw_case_summary', COUNT(*) FROM vw_case_summary
+UNION ALL
+SELECT 'vw_reviewer_performance', COUNT(*) FROM vw_reviewer_performance
+UNION ALL
+SELECT 'vw_sla_performance', COUNT(*) FROM vw_sla_performance
+UNION ALL
+SELECT 'vw_processing_performance', COUNT(*) FROM vw_processing_performance;
