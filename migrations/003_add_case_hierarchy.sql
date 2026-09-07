@@ -134,3 +134,18 @@ WHERE case_id IN (
     39, 59, 79, 99,
     40, 60, 80, 100
 );
+
+--- Clean up correct top-level ---
+
+UPDATE cases
+SET parent_case_id = NULL
+WHERE case_id IN (2, 3, 4);
+
+--- Verify---
+SELECT
+    case_id,
+    case_name,
+    parent_case_id
+FROM cases
+WHERE case_id BETWEEN 1 AND 20
+ORDER BY case_id;
