@@ -228,3 +228,55 @@ SELECT
         ELSE 'In Progress'
     END
 FROM uploads u;
+
+-- ============================================================
+-- Review Document Volume Correction
+-- ============================================================
+-- Keep reviewed document volume within the corresponding
+-- uploaded document volume.
+-- Synthetic completion rates are generated between 70% and 100%.
+
+UPDATE reviews r
+SET documents_reviewed =
+    FLOOR(u.documents_uploaded * (0.70 + RANDOM() * 0.30))::INTEGER
+FROM uploads u
+WHERE r.upload_id = u.upload_id;
+
+-- ============================================================
+-- Validation: Overall Review Completion
+-- ============================================================
+
+SELECT
+    SUM(u.documents_uploaded) AS total_documents_uploaded,
+    SUM(r.documents_reviewed) AS total_documents_reviewed,
+    ROUND(
+        SUM(r.documents_reviewed) * 100.0 /
+        NULLIF(SUM(u.documents_uploaded), 0),
+        2
+    ) AS review_completion_percentage
+FROM uploads u
+INNER JOIN reviews r
+    ON u.upload_id = r.upload_id;
+
+-- ============================================================
+-- Validation: Identify Uploads Above 100% Completion
+-- Expected result: 0 rows
+-- ============================================================
+
+SELECT
+    u.upload_id,
+    u.documents_uploaded,
+    SUM(r.documents_reviewed) AS documents_reviewed,
+    ROUND(
+        SUM(r.documents_reviewed) * 100.0 /
+        NULLIF(u.documents_uploaded, 0),
+        2
+    ) AS review_completion_percentage
+FROM uploads u
+INNER JOIN reviews r
+    ON u.upload_id = r.upload_id
+GROUP BY
+    u.upload_id,
+    u.documents_uploaded
+HAVING SUM(r.documents_reviewed) > u.documents_uploaded
+ORDER BY review_completion_percentage DESC;
