@@ -136,7 +136,8 @@ Provides case-level metrics including:
 - Review completion percentage
 - Client information
 
-Aggregation is performed before joining review and upload information to avoid duplicate counting.
+Upload and review data are aggregated independently before being joined at the case level to prevent duplicate counting. Review-volume 
+validation ensures that total reviewed documents for an upload do not exceed the available uploaded document volume.
 
 ### `vw_reviewer_performance`
 
@@ -274,7 +275,9 @@ This provides a traceable history of changes made to the database and reporting 
 
 ## Data Quality Validation
 
-Before using the reporting layer in Power BI, SQL validation checks were performed.
+## Data Quality Validation
+
+Before using the reporting layer in Power BI, SQL validation checks were performed to verify both data integrity and business rules.
 
 The validation process checks for:
 
@@ -287,11 +290,14 @@ The validation process checks for:
 - Negative processing times
 - Duplicate upload IDs
 - Duplicate review IDs
+- Review volume exceeding the corresponding uploaded document volume
+
+A key business rule validates that the combined `documents_reviewed` across all review records for an upload cannot exceed that upload's `documents_uploaded`.
 
 The validation queries are stored in:
 
 ```text
-validation/001_data_quality_checks.sql
+validation/001_data_quality_checks.sql/
 ```
 
 The final dataset passed the defined integrity checks.
@@ -633,6 +639,9 @@ This project strengthened practical experience in:
 - Dashboard design
 - Business-oriented data analysis
 - Git-based version control
+- KPI validation and root-cause analysis
+- Data-grain analysis
+- Source-level business rule validation
 
 ---
 
