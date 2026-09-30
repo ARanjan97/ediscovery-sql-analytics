@@ -514,6 +514,20 @@ SUM('SLA Performance'[sla_breached])
 
 ## KPI Design Approach
 
+### KPI Denominator Definitions
+
+**Processing Success %** measures finalized processing outcomes only:
+
+`Completed / (Completed + Failed)`
+
+Uploads still marked `Processing` or `Pending` are excluded because their final outcome is not yet known. With 125 completed and 101 failed uploads, the finalized success rate is approximately **55%**.
+
+**SLA Compliance %** also measures finalized outcomes only:
+
+`SLA Met / (SLA Met + SLA Breached)`
+
+`In Progress` SLA records are excluded from the denominator. With 157 SLA records met and 170 breached, overall SLA compliance is approximately **48%**.
+
 For overall percentage KPIs, the dashboard calculates results from the underlying counts instead of averaging case-level percentages.
 
 For example:
