@@ -280,3 +280,56 @@ GROUP BY
     u.documents_uploaded
 HAVING SUM(r.documents_reviewed) > u.documents_uploaded
 ORDER BY review_completion_percentage DESC;
+
+
+-- Generate realistic review completion at the upload level
+-- Total reviewed documents per upload remain between 70% and 100%
+-- of the corresponding uploaded document volume.
+
+WITH upload_targets AS (
+    SELECT
+        u.upload_id,
+        u.documents_uploaded,
+        0.70 + RANDOM() * 0.30 AS completion_ratio
+    FROM uploads u
+),
+review_counts AS (
+    SELECT
+        upload_id,
+        COUNT(*) AS review_count
+    FROM reviews
+    GROUP BY upload_id
+)
+UPDATE reviews r
+SET documents_reviewed =
+    FLOOR(
+        ut.documents_uploaded *
+        ut.completion_ratio /
+        rc.review_count
+    )::INTEGER
+FROM upload_targets ut
+INNER JOIN review_counts rc
+    ON ut.upload_id = rc.upload_id
+WHERE r.upload_id = ut.upload_id;
+
+
+-- Validate that reviewed volume never exceeds uploaded volume.
+-- Expected result: 0 rows.
+
+SELECT
+    u.upload_id,
+    u.documents_uploaded,
+    SUM(r.documents_reviewed) AS total_documents_reviewed,
+    ROUND(
+        SUM(r.documents_reviewed) * 100.0 /
+        NULLIF(u.documents_uploaded, 0),
+        2
+    ) AS completion_percentage
+FROM uploads u
+INNER JOIN reviews r
+    ON u.upload_id = r.upload_id
+GROUP BY
+    u.upload_id,
+    u.documents_uploaded
+HAVING SUM(r.documents_reviewed) > u.documents_uploaded
+ORDER BY completion_percentage DESC;
