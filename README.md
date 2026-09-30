@@ -4,6 +4,7 @@ An end-to-end analytics portfolio project built using **PostgreSQL, SQL, Power B
 
 The project covers the complete analytics workflow — from relational database design and SQL transformations to data-quality validation, reporting views, KPI development, and an interactive Power BI dashboard.
 
+**All data is synthetic. Client names are illustrative placeholders, not real engagements, and no metric reflects any real company.**
 ---
 
 ## Project Overview
@@ -275,8 +276,6 @@ This provides a traceable history of changes made to the database and reporting 
 
 ## Data Quality Validation
 
-## Data Quality Validation
-
 Before using the reporting layer in Power BI, SQL validation checks were performed to verify both data integrity and business rules.
 
 The validation process checks for:
@@ -297,7 +296,7 @@ A key business rule validates that the combined `documents_reviewed` across all 
 The validation queries are stored in:
 
 ```text
-validation/001_data_quality_checks.sql/
+validation/001_data_quality_checks.sql
 ```
 
 The final dataset passed the defined integrity checks.
